@@ -24,31 +24,39 @@ data = {
     ]
 }
 
+# Step 2: Load into DataFrame
 df = pd.DataFrame(data)
 
-# Step 2: Split data
-X_train, X_test, y_train, y_test = train_test_split(df["review"], df["sentiment"], test_size=0.3, random_state=42)
+# Step 3: Split data
+X_train, X_test, y_train, y_test = train_test_split(
+    df["review"], df["sentiment"], test_size=0.3, random_state=42
+)
 
-# Step 3: Text vectorization using TF-IDF
+# Step 4: Text vectorization using TF-IDF
 vectorizer = TfidfVectorizer()
 X_train_vectors = vectorizer.fit_transform(X_train)
 X_test_vectors = vectorizer.transform(X_test)
 
-# Step 4: Train Logistic Regression model
+# Step 5: Train Logistic Regression model
 model = LogisticRegression()
 model.fit(X_train_vectors, y_train)
 
-# Step 5: Predict and evaluate
+# Step 6: Evaluate the model
 y_pred = model.predict(X_test_vectors)
+print("Model Evaluation:\n")
 print(classification_report(y_test, y_pred))
 
-# Step 6: Test on new input
+# Step 7: Define a prediction function
 def predict_sentiment(review):
+    review = review.strip()
+    if not review:
+        return "Invalid input. Please enter a non-empty review."
     vec = vectorizer.transform([review])
     prediction = model.predict(vec)[0]
     return prediction
 
-# Example
-new_review = input("Enter a restaurant review: ")
-print("Review:", new_review)
-print("Predicted Sentiment:", predict_sentiment(new_review))
+# Step 8: Take user input
+new_review = input("\nEnter a restaurant review: ").strip()
+result = predict_sentiment(new_review)
+print("\nReview:", new_review)
+print("Predicted Sentiment:", result)
